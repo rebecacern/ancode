@@ -21,148 +21,148 @@ void minitrees(TString infiles, TString outfile)
 {
     
 
-    TChain *chain = new TChain("OSTwoLepAna/summaryTree"); //"summaryTree");
-    chain->Add(infiles);
+  TChain *chain = new TChain("OSTwoLepAna/summaryTree"); //"summaryTree");
+  chain->Add(infiles);
     
     
-    int chainentries = chain->GetEntries();   
-    if (verbose) cout << "[Info:] " << chainentries << " entries to be used" << endl;  
+  int chainentries = chain->GetEntries();   
+  if (verbose) cout << "[Info:] " << chainentries << " entries to be used" << endl;  
 
-    TFile *minitreefile = new TFile(outfile, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
+  TFile *minitreefile = new TFile(outfile, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-    TTree *newtree = new TTree("summaryTree","summaryTree");
+  TTree *newtree = new TTree("summaryTree","summaryTree");
     
     
-    Int_t cachesize = 100000000;   //100 MBytes
-    chain->SetCacheSize(cachesize);   //<<<
-    chain->SetCacheLearnEntries(20); 
+  Int_t cachesize = 100000000;   //100 MBytes
+  chain->SetCacheSize(cachesize);   //<<<
+  chain->SetCacheLearnEntries(20); 
     
-    //Variables in the original trees
-    double mcwgt_intree = -999.;
-    double wgt_intree = -999.;
-    double wallTimePerEvent_intree = -99.;
+  //Variables in the original trees
+  double mcwgt_intree = -999.;
+  double wgt_intree = -999.;
+  double wallTimePerEvent_intree = -99.;
 
-    int eventnum_intree = -999;
-    int higgs_decay_intree = -9999;
+  int eventnum_intree = -999;
+  int higgs_decay_intree = -9999;
 
-    int lumiBlock_intree = -999;
-    int runNumber_intree = -999;
+  int lumiBlock_intree = -999;
+  int runNumber_intree = -999;
     
-    vector<ttH::Lepton> *tightMvaBased_leptons_intree=0;
-    vector<ttH::Lepton> *preselected_leptons_intree=0;
-    vector<ttH::Jet> *preselected_jets_intree=0;
-    vector<ttH::MET> *met_intree=0;
+  vector<ttH::Lepton> *tightMvaBased_leptons_intree=0;
+  vector<ttH::Lepton> *preselected_leptons_intree=0;
+  vector<ttH::Jet> *preselected_jets_intree=0;
+  vector<ttH::MET> *met_intree=0;
     
       
-    chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-    chain->SetBranchAddress("wgt", &wgt_intree);
-    chain->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
+  chain->SetBranchAddress("mcwgt", &mcwgt_intree);
+  chain->SetBranchAddress("wgt", &wgt_intree);
+  chain->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
 
-    chain->SetBranchAddress("eventnum", &eventnum_intree);
-    chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
-    chain->SetBranchAddress("runNumber", &runNumber_intree);
-    chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
+  chain->SetBranchAddress("eventnum", &eventnum_intree);
+  chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
+  chain->SetBranchAddress("runNumber", &runNumber_intree);
+  chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
 
-    chain->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
-    chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
-    chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-    chain->SetBranchAddress("met", &met_intree);
+  chain->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+  chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  chain->SetBranchAddress("met", &met_intree);
     
-    // variables in the minitrees
-    double lepton_1_pt_handle = -99.;
-    double lepton_2_pt_handle = -99.;
-    double lepton_1_px_handle = -99.;
-    double lepton_2_px_handle = -99.;
-    double lepton_1_py_handle = -99.;
-    double lepton_2_py_handle = -99.;
-    double lepton_1_pz_handle = -99.;
-    double lepton_2_pz_handle = -99.;
-    double lepton_1_e_handle = -99.;
-    double lepton_2_e_handle = -99.;
-    double met_pt_handle = -99.;
-    double met_px_handle = -99.;
-    double met_py_handle = -99.;
-    double metLD_handle = 0.; //n.zeros(1,dtype=float)
-    double MHT_handle = 0.; 
-    double SumPt_handle = 0.;
-    int n_jets_handle = -99.;
+  // variables in the minitrees
+  double lepton_1_pt_handle = -99.;
+  double lepton_2_pt_handle = -99.;
+  double lepton_1_px_handle = -99.;
+  double lepton_2_px_handle = -99.;
+  double lepton_1_py_handle = -99.;
+  double lepton_2_py_handle = -99.;
+  double lepton_1_pz_handle = -99.;
+  double lepton_2_pz_handle = -99.;
+  double lepton_1_e_handle = -99.;
+  double lepton_2_e_handle = -99.;
+  double met_pt_handle = -99.;
+  double met_px_handle = -99.;
+  double met_py_handle = -99.;
+  double metLD_handle = 0.; //n.zeros(1,dtype=float)
+  double MHT_handle = 0.; 
+  double SumPt_handle = 0.;
+  int n_jets_handle = -99.;
   
    
-    newtree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
-    newtree->Branch("wgt", &wgt_intree, "wgt/D");
+  newtree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
+  newtree->Branch("wgt", &wgt_intree, "wgt/D");
         
-    newtree->Branch("lepton_1_pt", &lepton_1_pt_handle,"lepton_1_pt/D");
-    newtree->Branch("lepton_2_pt", &lepton_2_pt_handle,"lepton_2_pt/D");
-    newtree->Branch("lepton_1_px", &lepton_1_px_handle,"lepton_1_px/D");
-    newtree->Branch("lepton_2_px", &lepton_2_px_handle,"lepton_2_px/D");
-    newtree->Branch("lepton_1_py", &lepton_1_py_handle,"lepton_1_py/D");
-    newtree->Branch("lepton_2_py", &lepton_2_py_handle,"lepton_2_py/D");
-    newtree->Branch("lepton_1_pz", &lepton_1_pz_handle,"lepton_1_pz/D");
-    newtree->Branch("lepton_2_pz", &lepton_2_pz_handle,"lepton_2_pz/D");
-    newtree->Branch("lepton_1_e", &lepton_1_e_handle,"lepton_1_e/D");
-    newtree->Branch("lepton_2_e", &lepton_2_e_handle,"lepton_2_e/D");
-    newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
-    newtree->Branch("met_px", &met_px_handle,"met_px/D");
-    newtree->Branch("met_py", &met_py_handle,"met_py/D");
-    newtree->Branch("metLD", &metLD_handle,"metLD/D");
-    newtree->Branch("MHT", &MHT_handle,"MHT/D");
-    newtree->Branch("n_jets", &n_jets_handle,"n_jets/I");    
+  newtree->Branch("lepton_1_pt", &lepton_1_pt_handle,"lepton_1_pt/D");
+  newtree->Branch("lepton_2_pt", &lepton_2_pt_handle,"lepton_2_pt/D");
+  newtree->Branch("lepton_1_px", &lepton_1_px_handle,"lepton_1_px/D");
+  newtree->Branch("lepton_2_px", &lepton_2_px_handle,"lepton_2_px/D");
+  newtree->Branch("lepton_1_py", &lepton_1_py_handle,"lepton_1_py/D");
+  newtree->Branch("lepton_2_py", &lepton_2_py_handle,"lepton_2_py/D");
+  newtree->Branch("lepton_1_pz", &lepton_1_pz_handle,"lepton_1_pz/D");
+  newtree->Branch("lepton_2_pz", &lepton_2_pz_handle,"lepton_2_pz/D");
+  newtree->Branch("lepton_1_e", &lepton_1_e_handle,"lepton_1_e/D");
+  newtree->Branch("lepton_2_e", &lepton_2_e_handle,"lepton_2_e/D");
+  newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
+  newtree->Branch("met_px", &met_px_handle,"met_px/D");
+  newtree->Branch("met_py", &met_py_handle,"met_py/D");
+  newtree->Branch("metLD", &metLD_handle,"metLD/D");
+  newtree->Branch("MHT", &MHT_handle,"MHT/D");
+  newtree->Branch("n_jets", &n_jets_handle,"n_jets/I");    
      
-    int count=0;
-    int pass=0;
-    double starttime = get_wall_time();
-    //for (int i=0; i<100; i++)
-    for (int i=0; i<chainentries; i++)
+  int count=0;
+  int pass=0;
+  double starttime = get_wall_time();
+  //for (int i=0; i<100; i++)
+  for (int i=0; i<chainentries; i++)
     {
-        chain->GetEntry(i);
-        count++;
-	if((*preselected_jets_intree).size() < 4) continue;
-	if((*tightMvaBased_leptons_intree).size()!=2) continue;
-	if ((*tightMvaBased_leptons_intree)[0].obj.Pt() < 20 || (*tightMvaBased_leptons_intree)[1].obj.Pt() < 20) continue;
-	if ((*tightMvaBased_leptons_intree)[0].charge != (*tightMvaBased_leptons_intree)[1].charge) continue;
-	ttH::Lepton temp_lep_0 = (*tightMvaBased_leptons_intree)[0];
-	ttH::Lepton temp_lep_1 = (*tightMvaBased_leptons_intree)[1];
-	TLorentzVector vlep0(temp_lep_0.tlv().Px(), temp_lep_0.tlv().Py(), temp_lep_0.tlv().Pz(), temp_lep_0.tlv().E());
-	TLorentzVector vlep1(temp_lep_1.tlv().Px(), temp_lep_1.tlv().Py(), temp_lep_1.tlv().Pz(), temp_lep_1.tlv().E());
-	TLorentzVector pair = vlep0 + vlep1;
-	//if (getsumTLV(*tightMvaBased_leptons_intree).M()<= 12) continue; //alternative
-	if (pair.M() <= 12) continue;
-	if (fabs(pair.M()-mz) <=10) continue;
-	pass++;
-        n_jets_handle = 		   (*preselected_jets_intree).size();
-        lepton_1_pt_handle =               (*tightMvaBased_leptons_intree)[0].obj.Pt();
-        lepton_2_pt_handle =               (*tightMvaBased_leptons_intree)[1].obj.Pt();
-        lepton_1_px_handle =               temp_lep_0.tlv().Px();
-        lepton_2_px_handle =               temp_lep_1.tlv().Px();
-        lepton_1_py_handle =               temp_lep_0.tlv().Py();
-        lepton_2_py_handle =               temp_lep_1.tlv().Py();
-        lepton_1_pz_handle =               temp_lep_0.tlv().Pz();
-        lepton_2_pz_handle =               temp_lep_1.tlv().Pz();
-        lepton_1_e_handle =               temp_lep_0.tlv().E();
-        lepton_2_e_handle =               temp_lep_1.tlv().E();
+      chain->GetEntry(i);
+      count++;
+      if((*preselected_jets_intree).size() < 4) continue;
+      if((*tightMvaBased_leptons_intree).size()!=2) continue;
+      if ((*tightMvaBased_leptons_intree)[0].obj.Pt() < 20 || (*tightMvaBased_leptons_intree)[1].obj.Pt() < 20) continue;
+      if ((*tightMvaBased_leptons_intree)[0].charge != (*tightMvaBased_leptons_intree)[1].charge) continue;
+      ttH::Lepton temp_lep_0 = (*tightMvaBased_leptons_intree)[0];
+      ttH::Lepton temp_lep_1 = (*tightMvaBased_leptons_intree)[1];
+      TLorentzVector vlep0(temp_lep_0.tlv().Px(), temp_lep_0.tlv().Py(), temp_lep_0.tlv().Pz(), temp_lep_0.tlv().E());
+      TLorentzVector vlep1(temp_lep_1.tlv().Px(), temp_lep_1.tlv().Py(), temp_lep_1.tlv().Pz(), temp_lep_1.tlv().E());
+      TLorentzVector pair = vlep0 + vlep1;
+      //if (getsumTLV(*tightMvaBased_leptons_intree).M()<= 12) continue; //alternative
+      if (pair.M() <= 12) continue;
+      if (fabs(pair.M()-mz) <=10) continue;
+      pass++;
+      n_jets_handle = 		   (*preselected_jets_intree).size();
+      lepton_1_pt_handle =               (*tightMvaBased_leptons_intree)[0].obj.Pt();
+      lepton_2_pt_handle =               (*tightMvaBased_leptons_intree)[1].obj.Pt();
+      lepton_1_px_handle =               temp_lep_0.tlv().Px();
+      lepton_2_px_handle =               temp_lep_1.tlv().Px();
+      lepton_1_py_handle =               temp_lep_0.tlv().Py();
+      lepton_2_py_handle =               temp_lep_1.tlv().Py();
+      lepton_1_pz_handle =               temp_lep_0.tlv().Pz();
+      lepton_2_pz_handle =               temp_lep_1.tlv().Pz();
+      lepton_1_e_handle =               temp_lep_0.tlv().E();
+      lepton_2_e_handle =               temp_lep_1.tlv().E();
 	
-	// calculate MHT
-        auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
-        MHT_handle = objs_for_mht.Pt();
-        metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
-	ttH::MET temp_met = (*met_intree)[0];
-        met_pt_handle = (*met_intree)[0].obj.Pt();   
-        met_px_handle = temp_met.tlv().Px();   
-        met_py_handle = temp_met.tlv().Py();   
+      // calculate MHT
+      auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+      MHT_handle = objs_for_mht.Pt();
+      metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+      ttH::MET temp_met = (*met_intree)[0];
+      met_pt_handle = (*met_intree)[0].obj.Pt();   
+      met_px_handle = temp_met.tlv().Px();   
+      met_py_handle = temp_met.tlv().Py();   
        
-        newtree->Fill();
+      newtree->Fill();
     }
    
-    double endtime = get_wall_time();
+  double endtime = get_wall_time();
    
-    if (verbose){ 
-      cout << " " << endl;
-      cout << "[Info:] " << count <<  " events analyzed, " << pass << " events recorded (" << pass*100/count << "%)" << endl;
-      cout << "took " << endtime - starttime << " seconds, " << endl;
-      if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
-      cout << " " << endl;
-    }
-    newtree->Write();
-    minitreefile->Close();
+  if (verbose){ 
+    cout << " " << endl;
+    cout << "[Info:] " << count <<  " events analyzed, " << pass << " events recorded (" << pass*100/count << "%)" << endl;
+    cout << "took " << endtime - starttime << " seconds, " << endl;
+    if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
+    cout << " " << endl;
+  }
+  newtree->Write();
+  minitreefile->Close();
    
 }
