@@ -86,7 +86,7 @@ void minitrees(TString infiles, TString outfile)
   double MHT_handle = 0.; 
   double SumPt_handle = 0.;
   int n_jets_handle = -99.;
-  
+  int mode_handle = 0; //0 emu, 1 mue, 2 mumu, 3 ee 
    
   newtree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
   newtree->Branch("wgt", &wgt_intree, "wgt/D");
@@ -106,16 +106,26 @@ void minitrees(TString infiles, TString outfile)
   newtree->Branch("met_py", &met_py_handle,"met_py/D");
   newtree->Branch("metLD", &metLD_handle,"metLD/D");
   newtree->Branch("MHT", &MHT_handle,"MHT/D");
-  newtree->Branch("n_jets", &n_jets_handle,"n_jets/I");    
+  newtree->Branch("SumPt", &SumPt_handle,"SumPt/D");
+  newtree->Branch("n_jets", &n_jets_handle,"n_jets/I"); 
+  newtree->Branch("mode", &mode_handle,"mode/I");    
+  
+  TH1F* histo_ntotalevents = new TH1F("ntotalevents", "total events", 2, 0, 2);
+  histo_ntotalevents->Sumw2();	
      
   int count=0;
   int pass=0;
+  double countwgt=0;
+  double passwgt=0;
   double starttime = get_wall_time();
-  //for (int i=0; i<100; i++)
-  for (int i=0; i<chainentries; i++)
+  for (int i=0; i<100; i++)
+  //for (int i=0; i<chainentries; i++)
     {
       chain->GetEntry(i);
       count++;
+      countwgt+=mcwgt_intree;
+      histo_ntotalevents->Fill(0.5, 1);
+      histo_ntotalevents->Fill(1.5,mcwgt_intree); 
       if((*preselected_jets_intree).size() < 4) continue;
       if((*tightMvaBased_leptons_intree).size()!=2) continue;
       if ((*tightMvaBased_leptons_intree)[0].obj.Pt() < 20 || (*tightMvaBased_leptons_intree)[1].obj.Pt() < 20) continue;
@@ -127,8 +137,9 @@ void minitrees(TString infiles, TString outfile)
       TLorentzVector pair = vlep0 + vlep1;
       //if (getsumTLV(*tightMvaBased_leptons_intree).M()<= 12) continue; //alternative
       if (pair.M() <= 12) continue;
-      if (fabs(pair.M()-mz) <=10) continue;
+      //if (fabs(pair.M()-mz) <=10) continue;
       pass++;
+      passwgt=+mcwgt_intree;
       n_jets_handle = 		   (*preselected_jets_intree).size();
       lepton_1_pt_handle =               (*tightMvaBased_leptons_intree)[0].obj.Pt();
       lepton_2_pt_handle =               (*tightMvaBased_leptons_intree)[1].obj.Pt();
@@ -140,7 +151,12 @@ void minitrees(TString infiles, TString outfile)
       lepton_2_pz_handle =               temp_lep_1.tlv().Pz();
       lepton_1_e_handle =               temp_lep_0.tlv().E();
       lepton_2_e_handle =               temp_lep_1.tlv().E();
-	
+      mode_handle = 0; //0 emu, 1 mue, 2 mumu, 3 ee 
+      if (abs((*tightMvaBased_leptons_intree)[0].pdgID) == abs((*tightMvaBased_leptons_intree)[1].pdgID) ){
+        if (abs((*tightMvaBased_leptons_intree)[0].pdgID) == 11) mode_handle = 3;
+	else if (abs((*tightMvaBased_leptons_intree)[0].pdgID) == 13) mode_handle = 2;
+      } else if (abs((*tightMvaBased_leptons_intree)[0].pdgID) == 13) mode_handle = 1;
+    
       // calculate MHT
       auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
       MHT_handle = objs_for_mht.Pt();
@@ -149,20 +165,23 @@ void minitrees(TString infiles, TString outfile)
       met_pt_handle = (*met_intree)[0].obj.Pt();   
       met_px_handle = temp_met.tlv().Px();   
       met_py_handle = temp_met.tlv().Py();   
-       
+      SumPt_handle = getsumpt(*preselected_jets_intree, *preselected_leptons_intree);	
       newtree->Fill();
     }
    
   double endtime = get_wall_time();
-   
+ 
+  
   if (verbose){ 
     cout << " " << endl;
-    cout << "[Info:] " << count <<  " events analyzed, " << pass << " events recorded (" << pass*100/count << "%)" << endl;
+    cout << "[Info:] " << count <<  " events analyzed, weighted: " << countwgt << endl;
+    cout << "[Info:] " << pass << " events recorded (" << pass*100/count << "%), weighted: " << passwgt << endl;
     cout << "took " << endtime - starttime << " seconds, " << endl;
     if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
     cout << " " << endl;
   }
   newtree->Write();
+  minitreefile->Write();
   minitreefile->Close();
    
 }
