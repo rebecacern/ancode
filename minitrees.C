@@ -115,15 +115,16 @@ void minitrees(TString infiles, TString outfile)
      
   int count=0;
   int pass=0;
-  double countwgt=0;
-  double passwgt=0;
+  int countwgt=0;
+  int passwgt=0;
   double starttime = get_wall_time();
-  for (int i=0; i<100; i++)
+  for (int i=0; i<10; i++)
   //for (int i=0; i<chainentries; i++)
     {
       chain->GetEntry(i);
       count++;
       countwgt+=mcwgt_intree;
+      
       histo_ntotalevents->Fill(0.5, 1);
       histo_ntotalevents->Fill(1.5,mcwgt_intree); 
       if((*preselected_jets_intree).size() < 4) continue;
@@ -173,12 +174,12 @@ void minitrees(TString infiles, TString outfile)
  
   
   if (verbose){ 
-    cout << " " << endl;
-    cout << "[Info:] " << count <<  " events analyzed, weighted: " << countwgt << endl;
-    cout << "[Info:] " << pass << " events recorded (" << pass*100/count << "%), weighted: " << passwgt << endl;
-    cout << "took " << endtime - starttime << " seconds, " << endl;
-    if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
-    cout << " " << endl;
+    cout << "---------------------------------------------------------------------------- " << endl;
+    cout << "[Info:] " << count <<  " events analyzed \t\t[" << countwgt << " weighted]" << endl;
+    cout << "[Info:] " << pass << " events recorded (" << pass*100/count << "%) \t[" << passwgt << " weighted]" << endl;
+    cout << "[Info:] took " << endtime - starttime << " seconds " ;
+    if (chainentries>0) cout << ", an average of " << (endtime - starttime) / chainentries << " per event." << endl;
+    cout << "---------------------------------------------------------------------------- " << endl;
   }
   newtree->Write();
   minitreefile->Write();
